@@ -29,21 +29,40 @@ cmake_minimum_required (VERSION 3.5)
 #
 # grpc endpoint
 #
-set(
-  GRPC_ENDPOINT_SRCS
-  grpc_server.cc
-)
+set(GRPC_ENDPOINT_OBJECTS "")
+set(GRPC_ENDPOINT_LIBRARIES "")
 
-set(
-  GRPC_ENDPOINT_HDRS
-  grpc_server.h
-)
+if(${TRTIS_ENABLE_GRPC})
+  set(
+    GRPC_ENDPOINT_SRCS
+    grpc_server.cc
+  )
 
-add_library(
-  grpc-endpoint-library EXCLUDE_FROM_ALL OBJECT
-  ${GRPC_ENDPOINT_SRCS} ${GRPC_ENDPOINT_HDRS}
-)
-add_dependencies(grpc-endpoint-library grpc-library proto-library)
+  set(
+    GRPC_ENDPOINT_HDRS
+    grpc_server.h
+  )
+
+  add_library(
+    grpc-endpoint-library EXCLUDE_FROM_ALL OBJECT
+    ${GRPC_ENDPOINT_SRCS} ${GRPC_ENDPOINT_HDRS}
+  )
+  add_dependencies(grpc-endpoint-library grpc-library proto-library)
+
+  set(
+    GRPC_ENDPOINT_OBJECTS
+    $<TARGET_OBJECTS:grpc-endpoint-library>
+    $<TARGET_OBJECTS:grpc-library>
+    $<TARGET_OBJECTS:nvrpc-library>
+    $<TARGET_OBJECTS:proto-library>
+  )
+  set(
+    GRPC_ENDPOINT_LIBRARIES
+    PRIVATE gRPC::grpc++
+    PRIVATE gRPC::grpc
+    PRIVATE protobuf::libprotobuf
+  )
+endif() # TRTIS_ENABLE_GRPC
 
 #
 # http endpoint
@@ -91,10 +110,12 @@ set(
 add_executable(
   main
   ${TRTSERVER_SRCS}
+  ${GRPC_ENDPOINT_OBJECTS}
 )
 set_property(TARGET main PROPERTY OUTPUT_NAME trtserver)
 target_link_libraries(
   main
+  ${GRPC_ENDPOINT_LIBRARIES}
   PRIVATE trtserver
 )
 install(
@@ -155,10 +176,7 @@ add_library(
   $<TARGET_OBJECTS:server-library>
   $<TARGET_OBJECTS:model-config-library>
   $<TARGET_OBJECTS:proto-library>
-  $<TARGET_OBJECTS:grpc-library>
-  $<TARGET_OBJECTS:grpc-endpoint-library>
   $<TARGET_OBJECTS:http-endpoint-library>
-  $<TARGET_OBJECTS:nvrpc-library>
   ${CUDA_OBJS}
   ${BACKEND_OBJS}
 )
@@ -173,10 +191,9 @@ set_target_properties(
 target_link_libraries(
   trtserver
   PRIVATE ${TRTIS_EXTRA_LDFLAGS}
-  PRIVATE gRPC::grpc++
-  PRIVATE gRPC::grpc
   PRIVATE ${LIBEVENT_LIBRARIES}
   PRIVATE libevhtp::evhtp
+  PRIVATE protobuf::libprotobuf
   PRIVATE -lre2
 )
 

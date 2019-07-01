@@ -53,6 +53,10 @@ if(${TRTIS_ENABLE_METRICS})
   add_definitions(-DTRTIS_ENABLE_METRICS=1)
 endif() # TRTIS_ENABLE_METRICS
 
+if(${TRTIS_ENABLE_GRPC})
+  add_definitions(-DTRTIS_ENABLE_GRPC=1)
+endif() # TRTIS_ENABLE_GRPC
+
 if(${TRTIS_ENABLE_GCS})
   add_definitions(-DTRTIS_ENABLE_GCS=1)
 endif() # TRTIS_ENABLE_GCS

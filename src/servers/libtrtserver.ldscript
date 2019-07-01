@@ -28,7 +28,6 @@
     TRTSERVER_*;
     *nvidia15inferenceserver10Log*;
     *nvidia15inferenceserver8gLogger*;
-    *nvidia15inferenceserver10GRPCServer*;
     *nvidia15inferenceserver10HTTPServer*;
     *nvidia15inferenceserver15InferenceServer*;
   local: *;
