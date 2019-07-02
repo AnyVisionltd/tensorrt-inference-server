@@ -12,4 +12,4 @@ RUN mkdir -p /models/body_reid/2.5.0/
 
 ## DOWNLOAD THE MODEL
 RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
-    jfrog rt dl --flat nets/BodyFE/v2/V2.5.0_body_reid_2.onnx /models/body_reid/2.5.0/model.onnx
+  jfrog rt dl --flat nets/BodyFE/v2/V2.5.0_body_reid_2.onnx /models/body_reid/2.5.0/model.onnx
