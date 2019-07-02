@@ -1,0 +1,15 @@
+ARG BASE_IMAGE=nvcr.io/nvidia/tensorrtserver:19.06-py3
+FROM ${BASE_IMAGE}
+
+## INSTALL JFROG CLI
+RUN mkdir -p /usr/local/bin && \
+     cd /usr/local/bin && \
+     curl -fL https://getcli.jfrog.io | sh
+
+## CREATE MODEL REPOSITORY (https://docs.nvidia.com/deeplearning/sdk/tensorrt-inference-server-master-branch-guide/docs/model_repository.html)
+COPY models /models
+RUN mkdir -p /models/body_reid/2.5.0/
+
+## DOWNLOAD THE MODEL
+RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
+    jfrog rt dl --flat nets/BodyFE/v2/V2.5.0_body_reid_2.onnx /models/body_reid/2.5.0/model.onnx
