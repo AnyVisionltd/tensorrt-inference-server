@@ -117,14 +117,14 @@ class ModelRepositoryManager {
   /// publish the version state changes via that mirror function.
   const VersionStateMap GetVersionStates(const std::string& model_name);
 
-  /// Obtain the specified backend handle.
+  /// Obtain the specified backend.
   /// \param model_name The model name of the backend handle.
   /// \param model_version The model version of the backend handle.
-  /// \param handle Return the backend handle object.
+  /// \param backend Return the inference backend object.
   /// \return error status.
-  Status GetBackendHandle(
+  Status GetInferenceBackend(
       const std::string& model_name, const int64_t model_version,
-      std::shared_ptr<BackendHandle>* handle);
+      std::shared_ptr<InferenceBackend>* backend);
 
  private:
   struct ModelInfo;
