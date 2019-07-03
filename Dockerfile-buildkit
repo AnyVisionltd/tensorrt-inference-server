@@ -9,9 +9,9 @@ RUN mkdir -p /usr/local/bin && \
      curl -fL https://getcli.jfrog.io | sh
 
 ## CREATE MODEL REPOSITORY (https://docs.nvidia.com/deeplearning/sdk/tensorrt-inference-server-master-branch-guide/docs/model_repository.html)
-COPY models /models
-RUN mkdir -p /models/body_reid/2.5.0/
+RUN mkdir -p /models
 
-## DOWNLOAD THE MODEL
+## DOWNLOAD BODY_REID MODEL
+RUN mkdir -p /models/body_reid/2.5.0/
 RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
   jfrog rt dl --flat nets/BodyFE/v2/V2.5.0_body_reid_2.onnx /models/body_reid/2.5.0/model.onnx
