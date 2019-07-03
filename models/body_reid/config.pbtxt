@@ -1,6 +1,5 @@
 name: "body_reid"
 max_batch_size: 64
-version_policy: { Specific { "2.5.0" }}
 input [ {
   name: "data"
   data_type: TYPE_FP32
