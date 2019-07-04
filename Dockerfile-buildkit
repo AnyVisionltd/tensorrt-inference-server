@@ -12,7 +12,6 @@ RUN mkdir -p /usr/local/bin && \
 RUN mkdir -p /models
 
 ## DOWNLOAD BODY_REID MODEL
-RUN mkdir -p /models/body_reid/2/
+RUN mkdir -p /models/body_reid_v2.5.0/3/
 RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
-    jfrog rt dl --flat nets/BodyFE/v2/caffe/V2.5.0_body_reid_predict_net.pb /models/body_reid/2/model.netdef \
- && jfrog rt dl --flat nets/BodyFE/v2/caffe/V2.5.0_body_reid_init_net.pb /models/body_reid/2/init_model.netdef
+  jfrog rt dl --flat nets/BodyFE/v2/V2.5.0_body_reid_3.onnx /models/body_reid_v2.5.0/3/model.onnx
