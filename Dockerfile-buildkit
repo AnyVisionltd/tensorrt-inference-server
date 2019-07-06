@@ -11,7 +11,11 @@ RUN mkdir -p /usr/local/bin && \
 ## CREATE MODEL REPOSITORY (https://docs.nvidia.com/deeplearning/sdk/tensorrt-inference-server-master-branch-guide/docs/model_repository.html)
 RUN mkdir -p /models
 
-## DOWNLOAD BODY_REID MODEL
+## DOWNLOAD MODELS
 RUN mkdir -p /models/body_reid_v2.5.0/2/
 RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
   jfrog rt dl --flat nets/BodyFE/v2/V2.5.0_body_reid_2.onnx /models/body_reid_v2.5.0/2/model.onnx
+
+RUN mkdir -p /models/body_detector_v4.2.3/1/
+RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
+  jfrog rt dl --flat nets/BodyDetection/v4.2/pytorch/V4.2.3_body_det.onnx /models/body_detector_v4.2.3/1/model.onnx
