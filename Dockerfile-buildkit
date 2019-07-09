@@ -22,10 +22,10 @@ RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
 
 ## INSTALL ONNX-TENSORRT
 RUN apt-get update \
- && apt-get install --no-install-recommends -y cmake libprotobuf-dev protobuf-compiler
+ && apt-get install --no-install-recommends -y cmake libprotobuf-dev protobuf-compiler python
 RUN git clone --recursive https://github.com/onnx/onnx-tensorrt.git /root/onnx-tensorrt \
  && mkdir -p /root/onnx-tensorrt/build \
  && cd /root/onnx-tensorrt/build \
  && cmake .. -DTENSORRT_ROOT="/usr/src/tensorrt" -DGPU_ARCHS="60 61 70 75" \
- && make VERBOSE=1 \
+ && make VERBOSE=1 -j"$(nproc)" \
  && make install
