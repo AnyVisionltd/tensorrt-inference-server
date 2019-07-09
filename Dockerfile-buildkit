@@ -13,28 +13,33 @@ RUN mkdir -p /models
 RUN mkdir -p /models_original
 
 ## DOWNLOAD ONNX MODELS
-RUN mkdir -p /models/body_reid_v2.5.0/2/
+RUN mkdir -p /models/body_reid_v2.5.0/1/
 RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
-  jfrog rt dl --flat nets/BodyFE/v2/V2.5.0_body_reid_2.onnx /models/body_reid_v2.5.0/2/model.onnx
+  jfrog rt dl --flat nets/BodyFE/v2/V2.5.0_body_reid_2.onnx /models_original/V2.5.0_body_reid_2.onnx
+
 RUN mkdir -p /models/body_detector_v4.2.3/1/
 RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
   jfrog rt dl --flat nets/BodyDetection/v4.2/pytorch/V4.2.3_body_det.onnx /models/body_detector_v4.2.3/1/model.onnx
 
 ## INSTALL ONNX-TENSORRT
 RUN apt-get update \
- && apt-get install --no-install-recommends -y cmake libprotobuf-dev protobuf-compiler python python-pip
+ && apt-get install -y --no-install-recommends \
+      cmake libprotobuf-dev protobuf-compiler python python-pip \
+ && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 RUN git clone --recursive https://github.com/onnx/onnx-tensorrt.git /root/onnx-tensorrt \
  && mkdir -p /root/onnx-tensorrt/build \
  && cd /root/onnx-tensorrt/build \
  && cmake .. -DTENSORRT_ROOT="/usr/src/tensorrt" -DGPU_ARCHS="37 52 60 61 70 75" \
  && make VERBOSE=1 -j"$(nproc)" \
- && make install \
- && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+ && make install
 
-## INSTALL TRT PYTHON PACKAGE
+## INSTALL TENSORRT PYTHON PACKAGE
  RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
    jfrog rt dl --flat TensorR/tensorrt-5.1.5.0-cp27-none-linux_x86_64.whl /tmp/tensorrt-5.1.5.0-cp27-none-linux_x86_64.whl \
  && pip install /tmp/tensorrt-5.1.5.0-cp27-none-linux_x86_64.whl
- 
+
  ## INSTALL PYTHON DEPS
  RUN pip install numpy==1.16.4
+
+ ## SET WRITE PERMISSIONS TO MODEL REPOSITORY
+ RUN chown -R 1000:1000 /models
