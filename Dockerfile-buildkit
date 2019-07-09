@@ -34,12 +34,16 @@ RUN git clone --recursive https://github.com/onnx/onnx-tensorrt.git /root/onnx-t
  && make install
 
 ## INSTALL TENSORRT PYTHON PACKAGE
- RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
+RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
    jfrog rt dl --flat TensorR/tensorrt-5.1.5.0-cp27-none-linux_x86_64.whl /tmp/tensorrt-5.1.5.0-cp27-none-linux_x86_64.whl \
  && pip install /tmp/tensorrt-5.1.5.0-cp27-none-linux_x86_64.whl
 
  ## INSTALL PYTHON DEPS
- RUN pip install numpy==1.16.4
+RUN pip install numpy==1.16.4
 
  ## SET WRITE PERMISSIONS TO MODEL REPOSITORY
- RUN chown -R 1000:1000 /models
+RUN chown -R 1000:1000 /models
+
+## COPY UPDATED ENTRYPOINT
+COPY nvidia_entrypoint.sh /opt/tensorrtserver
+RUN chmod +x /opt/tensorrtserver/nvidia_entrypoint.sh
