@@ -10,22 +10,35 @@ RUN mkdir -p /usr/local/bin && \
 
 ## CREATE MODEL REPOSITORY (https://docs.nvidia.com/deeplearning/sdk/tensorrt-inference-server-master-branch-guide/docs/model_repository.html)
 RUN mkdir -p /models
+RUN mkdir -p /models_original
 
-## DOWNLOAD MODELS
+## DOWNLOAD ONNX MODELS
 RUN mkdir -p /models/body_reid_v2.5.0/2/
 RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
   jfrog rt dl --flat nets/BodyFE/v2/V2.5.0_body_reid_2.onnx /models/body_reid_v2.5.0/2/model.onnx
-
 RUN mkdir -p /models/body_detector_v4.2.3/1/
 RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
   jfrog rt dl --flat nets/BodyDetection/v4.2/pytorch/V4.2.3_body_det.onnx /models/body_detector_v4.2.3/1/model.onnx
 
+## DOWNLOAD CAFFE MODELS
+RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
+    jfrog rt dl --flat nets/BodyFE/v2/caffe/V2.5.0_body_reid.caffemodel /models_original/V2.5.0_body_reid.caffemodel \
+ && jfrog rt dl --flat nets/BodyFE/v2/caffe/V2.5.0_body_reid.prototxt /models_original/V2.5.0_body_reid.prototxt \
+ && jfrog rt dl --flat nets/BodyDetection/v4/caffe/V4.2.3_body_det.caffemodel /models_original/V4.2.3_body_det.caffemodel \
+ && jfrog rt dl --flat nets/BodyDetection/v4/caffe/V4.2.3_body_det.prototxt /models_original/V4.2.3_body_det.prototxt
+
 ## INSTALL ONNX-TENSORRT
 RUN apt-get update \
- && apt-get install --no-install-recommends -y cmake libprotobuf-dev protobuf-compiler python
+ && apt-get install --no-install-recommends -y cmake libprotobuf-dev protobuf-compiler python python-pip
 RUN git clone --recursive https://github.com/onnx/onnx-tensorrt.git /root/onnx-tensorrt \
  && mkdir -p /root/onnx-tensorrt/build \
  && cd /root/onnx-tensorrt/build \
- && cmake .. -DTENSORRT_ROOT="/usr/src/tensorrt" -DGPU_ARCHS="60 61 70 75" \
+ && cmake .. -DTENSORRT_ROOT="/usr/src/tensorrt" -DGPU_ARCHS="37 52 60 61 70 75" \
  && make VERBOSE=1 -j"$(nproc)" \
- && make install
+ && make install \
+ && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+## INSTALL TRT PYTHON PACKAGE
+ RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
+   jfrog rt dl --flat TensorR/tensorrt-5.1.5.0-cp27-none-linux_x86_64.whl /tmp/tensorrt-5.1.5.0-cp27-none-linux_x86_64.whl \
+ && pip install /tmp/tensorrt-5.1.5.0-cp27-none-linux_x86_64.whl
