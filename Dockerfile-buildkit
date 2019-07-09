@@ -27,5 +27,5 @@ RUN git clone --recursive https://github.com/onnx/onnx-tensorrt.git /root/onnx-t
  && mkdir -p /root/onnx-tensorrt/build \
  && cd /root/onnx-tensorrt/build \
  && cmake .. -DTENSORRT_ROOT="/usr/src/tensorrt" -DGPU_ARCHS="60 61 70 75" \
- && make -j8 \
+ && make VERBOSE=1 \
  && make install
