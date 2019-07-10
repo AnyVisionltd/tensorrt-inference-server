@@ -29,7 +29,8 @@ set -e
 
 ## BUILD TENSORRT ENGINE FILE
 /usr/local/bin/onnx2trt /models_original/V2.5.0_body_reid_2.onnx -b 32 -d 16 -o /models/body_reid_v2.5.0/1/model.plan
-
+echo ""
+/usr/local/bin/onnx2trt /models_original/V4.2.3_body_det_lc.onnx -b 8 -d 16 -o /models/body_detector_v4.2.3/1/model.plan
 echo ""
 echo ""
 

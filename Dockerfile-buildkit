@@ -19,7 +19,7 @@ RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
 
 RUN mkdir -p /models/body_detector_v4.2.3/1/
 RUN --mount=type=secret,id=jfrog-cfg,target=/root/.jfrog/jfrog-cli.conf \
-  jfrog rt dl --flat nets/BodyDetection/v4.2/pytorch/V4.2.3_body_det.onnx /models/body_detector_v4.2.3/1/model.onnx
+  jfrog rt dl --flat nets/BodyDetection/v4.2/pytorch/V4.2.3_body_det_lc.onnx /models_original/V4.2.3_body_det_lc.onnx
 
 ## INSTALL ONNX-TENSORRT
 RUN apt-get update \
